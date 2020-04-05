@@ -11,9 +11,9 @@ function loop = complexLoop(A,B,direction)
     
     gamma0 = atan2(imag(B)-imag(A), real(B)-real(A));
     if(strcmp(direction, 'clockwise'))
-      gamma = linspace(-pi,-2*pi) + gamma0;
+      gamma = linspace(-pi,-2*pi,500) + gamma0;
     else
-      gamma = linspace(-pi,0) + gamma0;
+      gamma = linspace(-pi,0,500) + gamma0;
     end
     
     loopRe = r*cos(gamma) + real(S);

@@ -21,12 +21,22 @@ function [] = plotAnimate(path_s, path_F)
         subplot(121)
         point_s = complex(real(path_s(i)), imag(path_s(i)));
         addpoints(line_s, real(point_s), imag(point_s))
-        
-        if(mod(i,51)==0)
+        arrow_scale = 0;
+        if(mod(i,150)==0)
             p1 = [real(path_s(i-1)) imag(path_s(i-1))]';
             p2 = [real(path_s(i)) imag(path_s(i))]';
-            arrowh([p1(1) p2(1)], [p1(2) p2(2)], blue, 150);
+            arrow_scale = norm(p2-p1, 2) * 100;
+            if (arrow_scale > 180)
+                arrow_scale = 180;
+            end
+            arrowh([p1(1) p2(1)], [p1(2) p2(2)], blue, arrow_scale);
         end
+        
+        try
+            rate = 100/norm(path_s(i)-path_s(i+1));
+        end
+        xlim([ real(point_s)-1/rate real(point_s)+1/rate])
+        ylim([ imag(point_s)-1/rate imag(point_s)+1/rate])
         
         %% F plane
         subplot(122)
@@ -34,15 +44,23 @@ function [] = plotAnimate(path_s, path_F)
         point_F = path_F(i);
         addpoints(line_F, real(point_F), imag(point_F));
         
-        if(mod(i,51)==0)
+        if(mod(i,150)==0)
             p1 = [real(path_F(i-1)) imag(path_F(i-1))]';
             p2 = [real(path_F(i)) imag(path_F(i))]';
-            arrowh([p1(1) p2(1)], [p1(2) p2(2)], orange, 150);
+            arrow_scale = norm(p2-p1, 2)*1000;
+            if (arrow_scale > 180)
+                arrow_scale = 180;
+            end
+            arrowh([p1(1) p2(1)], [p1(2) p2(2)], orange, arrow_scale);
         end
         
+        try
+            rate = 100/norm(path_F(i)-path_F(i+1));
+        end
+        xlim([ real(point_F)-1/rate real(point_F)+1/rate])
+        ylim([ imag(point_F)-1/rate imag(point_F)+1/rate])
         %%
     drawnow
-    pause(0.05)
     end
             
         

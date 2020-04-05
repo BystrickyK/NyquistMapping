@@ -20,21 +20,53 @@ p = solve(den==0, s);
 p = double(p);
 p = complex(real(p), imag(p))
 
-%% complex plane line trajectory
-A = -2 - 1*j;
-B = 2 + 1*j;
-C = 2 - 1*j;
-D = -2 - 1*j;
 
-s_path = [];
+%% find poles and zeroes on the jw axis
+pzcount = length(z); % number of poles P is equal to number of zeros Z
+dp = []; % points to avoid in the s countour
+for i = 1:pzcount
+    if (real(z(i)) == 0)
+        dp(end+1) = z(i);
+    end
+    if (real(p(i)) == 0)
+        dp(end+1) = p(i);
+    end
+end
+dp = [z; p]
+%% sort dangerous points by imaginary part
+
+    dp_tmp = zeros(length(dp), 2);
+    
+    for i = 1:length(dp) %split Re and Im
+        dp_tmp(i, :) = [real(dp(i)) imag(dp(i))];
+    end
+    
+    dp_tmp = sortrows(dp_tmp, 1);
+    
+    for i = 1:length(dp) %connect Re and Im
+        dp(i) = complex(dp_tmp(i,1), dp_tmp(i,2));
+    end
+    
+%% complex plane line trajectory
+segmentcount = 2 + length(dp);
+points = zeros(segmentcount, 1);
+points(1) = -2 + 0j;
+points(end) = 2 + 0j;
+points(2:end-1) = dp;
+% points = [-12 - 5j, 3-3j, -2-1j, 5+3j, 15+7j]
+s_path = loopConnectPoints(points);
+s_path(end+1,:) = complexLoop(points(end), points(1), 'clockwise');
+
+    
+
+% s_path = [];
 % s_path(end+1, :) = complexLine(A,B);
-% s_path(end+1, :) = complexLine(B,C);
-% s_path(end+1, :) = complexLine(C,D);
-% s_path(end+1, :) = complexLine(D,A);
-s_path(end+1, :) = complexLoop(B,C);
-s_path(end+1, :) = complexLoop(C,B);
+% s_path(end+1, :) = complexLoop(B,A,'clockwise');
 
 %% map trajectories with F
+% The total number N of clockwise
+% encirclements of the origin of the F(s) plane, as a representative point s traces out the
+% entire contour in the clockwise direction, is equal to Z-P. 
 F_path = [];
 segments = size(s_path);
 segments = segments(1);
@@ -50,8 +82,8 @@ subplot(121)
 hold on
 grid on
 axis equal
-xlim([-3 6])
-ylim([-3 6])
+xlim([ min(real(s_path(:))) max(real(s_path(:))) ])
+ylim([ min(imag(s_path(:))) max(imag(s_path(:))) ])
 ax = gca;
 ax.XAxisLocation = 'origin';
 ax.YAxisLocation = 'origin';
@@ -61,8 +93,12 @@ subplot(122)
 hold on
 grid on
 axis equal
-xlim([-3 6])
-ylim([-3 6])
+xlim([ min(real(F_path(:))) max(real(F_path(:))) ])
+ylim([ min(imag(F_path(:))) max(imag(F_path(:))) ])
+
+xlim([ -5 5 ])
+ylim([ -3 3])
+
 ax = gca;
 ax.XAxisLocation = 'origin';
 ax.YAxisLocation = 'origin';
