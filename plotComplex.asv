@@ -15,6 +15,8 @@ function [] = plotAnimate(path_s, path_F)
     line_F.Color = orange;
     line_F.LineWidth = 2;
     
+    rate1 = [];
+    rate2 = [];
     for i = 1:length(path_s)
        
         %% s plane
@@ -33,10 +35,11 @@ function [] = plotAnimate(path_s, path_F)
         end
         
         try
-            rate = 100/norm(path_s(i)-path_s(i+1));
+            rate1(end+1) = 0.002/norm(path_s(i)-path_s(i+1));
+            rate1MA = movmean(rate1,10);
+            xlim([ real(point_s)-1/rate1MA real(point_s)+1/rate1MA])
+            ylim([ imag(point_s)-1/rate1MA imag(point_s)+1/rate1MA])
         end
-        xlim([ real(point_s)-1/rate real(point_s)+1/rate])
-        ylim([ imag(point_s)-1/rate imag(point_s)+1/rate])
         
         %% F plane
         subplot(122)
@@ -44,21 +47,25 @@ function [] = plotAnimate(path_s, path_F)
         point_F = path_F(i);
         addpoints(line_F, real(point_F), imag(point_F));
         
-        if(mod(i,150)==0)
+        if(mod(i,251)==0)
             p1 = [real(path_F(i-1)) imag(path_F(i-1))]';
             p2 = [real(path_F(i)) imag(path_F(i))]';
-            arrow_scale = norm(p2-p1, 2)*1000;
-            if (arrow_scale > 180)
-                arrow_scale = 180;
-            end
-            arrowh([p1(1) p2(1)], [p1(2) p2(2)], orange, arrow_scale);
+%             arrow_scale = norm(p2-p1, 2)*100;
+%             if (arrow_scale > 180)
+%                 arrow_scale = 180;
+%             end
+            arrowh([p1(1) p2(1)], [p1(2) p2(2)], orange, 150);
         end
         
         try
-            rate = 100/norm(path_F(i)-path_F(i+1));
+            rate2(end+1) = 0.02/norm(path_F(i)-path_F(i+5));
+            rate2MA = movmean(rate2,10);
+            xlim([ real(point_F)-1/rate2MA real(point_F)+1/rate2MA])
+            ylim([ imag(point_F)-1/rate2MA imag(point_F)+1/rate2MA])
+        catch
+            disp("F error")
         end
-        xlim([ real(point_F)-1/rate real(point_F)+1/rate])
-        ylim([ imag(point_F)-1/rate imag(point_F)+1/rate])
+        
         %%
     drawnow
     end

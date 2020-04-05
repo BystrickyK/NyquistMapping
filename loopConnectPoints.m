@@ -6,7 +6,7 @@ function path = loopConnectPoints(points)
     endPoint = points(end);
     
     if (isempty(dangerousPoints))
-        path = complexLine(A,B);
+        path = complexLine(initPoint,endPoint);
         return
     end
     
@@ -17,7 +17,7 @@ function path = loopConnectPoints(points)
         pointOfInterest = dangerousPoints(i);
         while(1) %do-while
             [~, vicinityPoints(:, i)] = complexLine(currentPoint, pointOfInterest);
-            if(norm(vicinityPoints(1,i)-vicinityPoints(2,i)) < 1e-3);
+            if(norm(vicinityPoints(1,i)-vicinityPoints(2,i)) < 0.5);
                 break
             else
             currentPoint = vicinityPoints(1, i);

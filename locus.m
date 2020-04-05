@@ -5,10 +5,10 @@ clc
 syms L(s) F(s) s
 
 % open loop transfer function
-L(s) = 2 / ((s-1)*(s+1));
+L(s) = 2 / ((s-0.5)*(s-1));
 
 % characteristic equation
-F(s) = 1 + L(s);
+F(s) = L(s);
 F(s) = simplifyFraction(F(s))
 
 % poles and zeroes
@@ -32,7 +32,6 @@ for i = 1:pzcount
         dp(end+1) = p(i);
     end
 end
-dp = [z; p]
 %% sort dangerous points by imaginary part
 
     dp_tmp = zeros(length(dp), 2);
@@ -50,12 +49,12 @@ dp = [z; p]
 %% complex plane line trajectory
 segmentcount = 2 + length(dp);
 points = zeros(segmentcount, 1);
-points(1) = -2 + 0j;
-points(end) = 2 + 0j;
+points(1) = 0 - 0j;
+points(end) = 0 + 10000j;
 points(2:end-1) = dp;
 % points = [-12 - 5j, 3-3j, -2-1j, 5+3j, 15+7j]
 s_path = loopConnectPoints(points);
-s_path(end+1,:) = complexLoop(points(end), points(1), 'clockwise');
+% s_path(end+1,:) = complexLoop(points(end), points(1), 'clockwise');
 
     
 
@@ -82,8 +81,6 @@ subplot(121)
 hold on
 grid on
 axis equal
-xlim([ min(real(s_path(:))) max(real(s_path(:))) ])
-ylim([ min(imag(s_path(:))) max(imag(s_path(:))) ])
 ax = gca;
 ax.XAxisLocation = 'origin';
 ax.YAxisLocation = 'origin';
@@ -93,8 +90,6 @@ subplot(122)
 hold on
 grid on
 axis equal
-xlim([ min(real(F_path(:))) max(real(F_path(:))) ])
-ylim([ min(imag(F_path(:))) max(imag(F_path(:))) ])
 
 xlim([ -5 5 ])
 ylim([ -3 3])
@@ -112,3 +107,12 @@ for column = 1:segments
     
     plotComplex(s_traj, F_traj);
 end
+
+subplot(121)
+xlim([ min(real(s_path(:)))-10 max(real(s_path(:)))+10 ])
+ylim([ min(imag(s_path(:)))-10 max(imag(s_path(:)))+10 ])
+
+subplot(122)
+xlim([ min(real(F_path(:))) max(real(F_path(:))) ])
+ylim([ min(imag(F_path(:))) max(imag(F_path(:))) ])
+
