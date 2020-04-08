@@ -10,10 +10,10 @@ function path = loopConnectPoints(points)
         return
     end
     
-    %% for every pole and zero, create two points for the loop-around
+    %% for every pole and zero, create two points for the loop-around (starting and ending)
     loopPoints = zeros(2, length(dangerousPoints));
     currentPoint = initPoint;
-    D = 0.01; % approximate loop diameter
+    D = 0.001; % approximate loop diameter
     for i = 1:length(dangerousPoints)
         pointOfInterest = dangerousPoints(i);
         while(1) %technically a do-while loop
@@ -23,12 +23,12 @@ function path = loopConnectPoints(points)
             loopPoints(:,i) = complex(real(loopPoints(:,i)), imag(loopPoints(:,i)));
 %             [~, vicinityPoints(:, i)] = complexLine(currentPoint, pointOfInterest);
             %break condition, euclidean distance between loop ends < R
-                if(norm(loopPoints(1,i)-loopPoints(2,i)) < D); 
+                if(norm(loopPoints(1,i)-loopPoints(2,i)) < D)
                     break
                 else
             %set current point to the first point of the loop
-            currentPoint = loopPoints(1, i);
-            end
+                currentPoint = loopPoints(1, i);
+                end
         end
     end
         
@@ -37,7 +37,7 @@ function path = loopConnectPoints(points)
     path = {};
     for i = 1:length(dangerousPoints)
         %go from current point to the first point of the pole|zero loop
-        path{end+1} = complexLine(currentPoint, loopPoints(1, i));
+        path{end+1} = complexLine(currentPoint, loopPoints(1,i));
         %loop around the pole|zero
         path{end+1} = complexLoop(loopPoints(1,i), loopPoints(2,i));
         %set current point to the end of the loop

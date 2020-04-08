@@ -2,9 +2,11 @@ function N = plotAnimate(path_s, path_F)
  
 %     path_s = complex(real(path_s), imag(path_s));
 %     path_F = complex(real(path_F), imag(path_F));
-    
+    close all
     filename = 'animation.gif';
-    fig = figure('visible','off');
+%     fig = figure('visible','off'); % getframe function for gif creation
+%     runs 4x slower if figure is invisible
+    fig = figure('visible','on');
     set(fig, 'Position',  [100, 100, 1500, 750])
 
     ax1 = subplot(121)
@@ -87,17 +89,19 @@ function N = plotAnimate(path_s, path_F)
         N = -unwrap(beta(1:i))/2/pi;
         ax2.Title.String = {"L(s) plane";"Clockwise encirclements N = " + string(N(end))};
 
-        % adaptive zoom, 
+%         adaptive zoom
         try
             rate2 = 0.1/norm(path_F(i)-path_F(i+1), 2);
             xlim(ax2, [ real(point_F)-1/rate2 real(point_F)+1/rate2])
             ylim(ax2, [ imag(point_F)-1/rate2 imag(point_F)+1/rate2])
         end
+
+%         ax2.XLimMode = 'auto';
+%         ax2.YLimMode = 'auto';
         
-        %%
-%     drawnow
-    
-    if(mod(i,5)==0) %capture every 5th frame
+        %% 
+    drawnow
+    if(mod(i,3)==0) %capture every 5th frame
         frame = getframe(fig);
         im = frame2im(frame);
         [imind,cm] = rgb2ind(im,256);
@@ -106,6 +110,16 @@ function N = plotAnimate(path_s, path_F)
 
     
     end
+    
+    ax1.XLimMode = 'auto';
+    ax1.YLimMode = 'auto';
+    ax2.XLimMode = 'auto';
+    ax2.YLimMode = 'auto';
+    
+    frame = getframe(fig);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',5); 
     
     N = -unwrap(beta)/2/pi;
             
