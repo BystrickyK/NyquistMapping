@@ -2,7 +2,7 @@
 For a given open-loop transfer function L(s), maps the Nyquist path in the s plane into the L(s) plane. Calculates the number of clockwise encirclements around the (-1 + 0j) point in the L(s) plane. The Nyquist path makes a loop around each L(s) integrator.
 
 Demo:
-![equation](https://bit.ly/2JV19pP)
+![equation](http://www.sciweavers.org/tex2img.php?eq=L(s)%20%3D%20\frac{100}{s\,\left(10\,s-\mathrm{i}\right)\,\left(10\,s%2B1{}\mathrm{i}\right)\,\left(s-1\right)\,\left(s-2\right)\,\left(s-\mathrm{i}\right)\,\left(s%2B1{}\mathrm{i}\right)\,\left(s-1-\mathrm{i}\right)\,\left(s-1%2B1{}\mathrm{i}\right)\,\left(s-5{}\mathrm{i}\right)\,\left(s%2B5{}\mathrm{i}\right)}&bc=White&fc=Black&im=png&fs=12&ff=modern&edit=0)
 
 Pole-zero map of L(s)
 
