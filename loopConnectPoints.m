@@ -10,30 +10,40 @@ function path = loopConnectPoints(points)
         return
     end
     
-    %%
-    vicinityPoints = zeros(2, length(dangerousPoints));
+    %% for every pole and zero, create two points for the loop-around
+    loopPoints = zeros(2, length(dangerousPoints));
     currentPoint = initPoint;
-    for i = 1:length(dangerousPoints);
+    D = 0.1; % approximate loop diameter
+    for i = 1:length(dangerousPoints)
         pointOfInterest = dangerousPoints(i);
-        while(1) %do-while
-            [~, vicinityPoints(:, i)] = complexLine(currentPoint, pointOfInterest);
-            if(norm(vicinityPoints(1,i)-vicinityPoints(2,i)) < 0.5);
-                break
-            else
-            currentPoint = vicinityPoints(1, i);
+        while(1) %technically a do-while loop
+            %in every iteration, move loop points closer to the pole|zero
+            vicinity = [0.01 1.99];
+            loopPoints(:,i) = currentPoint*(1-vicinity) + pointOfInterest*vicinity;
+            loopPoints(:,i) = complex(real(loopPoints(:,i)), imag(loopPoints(:,i)));
+%             [~, vicinityPoints(:, i)] = complexLine(currentPoint, pointOfInterest);
+            %break condition, euclidean distance between loop ends < R
+                if(norm(loopPoints(1,i)-loopPoints(2,i)) < D); 
+                    break
+                else
+            %set current point to the first point of the loop
+            currentPoint = loopPoints(1, i);
             end
         end
     end
         
     %% make path
     currentPoint = initPoint
-    path = [];
+    path = {};
     for i = 1:length(dangerousPoints)
-        path(end+1,:) = complexLine(currentPoint, vicinityPoints(1, i));
-        path(end+1,:) = complexLoop(vicinityPoints(1,i), vicinityPoints(2,i));
-        currentPoint = vicinityPoints(2,i);
+        %go from current point to the first point of the pole|zero loop
+        path{end+1} = complexLine(currentPoint, loopPoints(1, i));
+        %loop around the pole|zero
+        path{end+1} = complexLoop(loopPoints(1,i), loopPoints(2,i));
+        %set current point to the end of the loop
+        currentPoint = loopPoints(2,i);
     end
-    path(end+1,:) = complexLine(currentPoint, endPoint);
+    path{end+1} = complexLine(currentPoint, endPoint);
 end
         
         
