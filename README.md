@@ -1,1 +1,2 @@
 # NyquistMapping
+![](animation.gif)
