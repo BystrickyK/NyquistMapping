@@ -13,7 +13,7 @@ function path = loopConnectPoints(points)
     %% for every pole and zero, create two points for the loop-around
     loopPoints = zeros(2, length(dangerousPoints));
     currentPoint = initPoint;
-    D = 0.1; % approximate loop diameter
+    D = 0.01; % approximate loop diameter
     for i = 1:length(dangerousPoints)
         pointOfInterest = dangerousPoints(i);
         while(1) %technically a do-while loop

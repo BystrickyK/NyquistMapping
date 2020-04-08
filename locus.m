@@ -5,14 +5,15 @@ clc
 syms L(s) M(s) CL(s) s
 
 % open loop transfer function
-L(s) = 2 / ((s-1)*s*(s-2)*(s-1j)*(s+1j)*(s-1-1j)*(s-1+1j));
+L(s) = 1 / ((s-1)*s*(s-2)*(s-1j)*(s+1j)*(s-1-1j)*(s-1+1j)*(s-5j)*(s+5j)*(s-0.1j)*(s+0.1j));
+% L(s) = 0.99 / (s-1)
 L(s) = simplifyFraction(L(s))
 
 [Lnum, Lden] = numden(L(s));
 Lnum = double(coeffs(Lnum, 'all'));
 Lden = double(coeffs(Lden,'all'));
 L_sys = tf(Lnum, Lden);
-figure
+f0 = figure('Name', 'Open loop | pole-zero map');
 pzplot(L_sys);
 title("Open loop system");
 
@@ -23,7 +24,7 @@ M(s) = simplifyFraction(M(s));
 Mnum = double(coeffs(Mnum, 'all'));
 Mden = double(coeffs(Mden,'all'));
 M_sys = tf(Mnum, Mden);
-figure
+f1 = figure('Name', 'Characteristic polynomial | pole-zero map');
 pzplot(M_sys);
 title("Characteristic polynomial");
 
@@ -35,7 +36,7 @@ CL(s) = simplifyFraction(CL(s))
 CLnum = double(coeffs(CLnum, 'all'));
 CLden = double(coeffs(CLden,'all'));
 CL_sys = tf(CLnum, CLden);
-figure
+f2 = figure('Name', 'Closed loop | pole-zero map');
 pzplot(CL_sys);
 title("Closed loop system");
 
@@ -76,11 +77,14 @@ end
     end
     
 %% complex plane line trajectory
-points = 0 - 10000j;
-points = [ points dp ];
-points = [ points, 0 + 10000j];
-% points = [-12 - 5j, 3-3j, -2-1j, 5+3j, 15+7j]
+points = 0 - 1e7*j; %start point
+points = [ points dp ]; %loop points
+points = [ points, 0 + 1e7*j]; %end point
+if(length(dp)==0)
+    s_path = {complexLine(points(1), 0), complexLine(0,points(end))}
+else
 s_path = loopConnectPoints(points);
+end
 s_path{end+1} = complexLoop(points(end), points(1), 'clockwise');
 
 %% map trajectories with F
@@ -94,36 +98,6 @@ for column = 1:segments
     L_path{end+1} = double(L(segment));
 end
 
-
-figure
-
-subplot(121)
-hold on
-grid on
-axis equal
-ax = gca;
-ax.XAxisLocation = 'origin';
-ax.YAxisLocation = 'origin';
-title("s plane")
-
-subplot(122)
-hold on
-grid on
-axis equal
-
-findMinReal = @(C) min(real(C)) 
-findMaxReal = @(C) max(real(C)) 
-findMinImag = @(C) min(imag(C)) 
-findMaxImag = @(C) max(imag(C)) 
-
-xlim([ min(cellfun(findMinReal,L_path)) max(cellfun(findMaxReal,L_path)) ])
-ylim([ min(cellfun(findMinImag,L_path)) max(cellfun(findMaxImag,L_path)) ])
-
-ax = gca;
-ax.XAxisLocation = 'origin';
-ax.YAxisLocation = 'origin';
-title("L(s) plane")
-
 segments = length(s_path);
 segments = segments(1);
 s_traj = [s_path{:}];
@@ -131,13 +105,5 @@ L_traj = [L_path{:}];
 
 % animate the trajectories and calculate vector rotations
 N = plotComplex(s_traj, L_traj);
-
-
-subplot(121)
-xlim auto
-ylim auto
-
-subplot(122)
-xlim auto
-ylim auto
+disp("N = " + string(N(end)))
 
