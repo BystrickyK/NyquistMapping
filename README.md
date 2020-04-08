@@ -1,4 +1,4 @@
 # NyquistMapping
-![](openloopLs.gif)
+![](openloopLs.png)
 ![](animation.gif)
-![](charpolMs.gif)
+![](charpolMs.png)
